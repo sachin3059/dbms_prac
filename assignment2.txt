@@ -1,0 +1,183 @@
+ Assignment 2: 
+
+create database Assignment2;
+use Assignment2;
+
+create table Department(
+    dep_id int primary key ,
+    dep_name varchar(20)
+);
+
+create table Employees(
+    emp_id int primary key,
+    emp_name varchar(30),
+    salary int,
+    dep_id int,
+    foreign key (dep_id) references Department(dep_id)
+);
+
+
+insert into Department (dep_id, dep_name) values 
+(1, 'Administration' ), 
+(2, 'customer_service' ),
+(3, 'finance') ,
+(4, 'human Resource') ,
+(5,  'Sales');
+
+select * from Department;
+
+insert into Employees(emp_id, emp_name ,salary , dep_id) values
+( 1, 'abhinash' ,5000,4),
+( 2, 'ankur' ,6500,1),
+( 3, 'sachin', 8000,5) ,
+( 4, 'gourav',7200,3),
+( 5, 'manish',5600,null); 
+
+select * from Employees;
+
+select t1.emp_id , t1.emp_name ,t2.dep_name
+from Employees as t1
+left join Department as t2
+on t1.dep_id = t2.dep_id ;
+
+create view EmployeeDepartment as
+select t1.emp_id , t1.emp_name ,t2.dep_name
+from Employees as t1
+left join Department as t2 
+on t1.dep_id = t2.dep_id ;
+
+select * from EmployeeDepartment ;
+
+create or replace view EmployeeDepartment as
+select t1.emp_id , t1.emp_name ,t2.dep_name ,t1.salary
+from Employees as t1
+left join Department as t2
+on t1.dep_id = t2.dep_id ;
+
+select * from EmployeeDepartment ;
+
+insert into Employees(emp_id, emp_name ,salary , dep_id) values
+( 6, 'abhinash2' ,6000,3),
+( 7, 'ankur2' ,6600,2),
+( 8, 'sachin2', 7000,null);
+
+select * from Employees;
+
+select * from EmployeeDepartment where dep_name is null;
+
+update Employees set salary = 6000 where emp_id = 1 ;
+
+set sql_safe_updates = 0;
+delete from Employees where salary= 8000;
+
+drop view EmployeeDepartment;
+
+
+
+
+-- 2.B---------------------------------------------------------------
+
+
+CREATE TABLE ProjectLocations (
+    project_id INT PRIMARY KEY,
+    address VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Staff (
+    emp_id INT PRIMARY KEY,
+    emp_name VARCHAR(50) NOT NULL,
+    address VARCHAR(50),
+    salary DECIMAL(10, 2),
+    commission DECIMAL(10, 2)
+);
+
+
+INSERT INTO Staff (emp_id, emp_name, address, salary, commission) VALUES
+(1, 'Amit', 'Pune', 35000, 5000),
+(2, 'Sneha', 'Pune', 25000, NULL),
+(3, 'Savita', 'Nasik', 28000, 2000),
+(4, 'Pooja', 'Mumbai', 19000, NULL),
+(5, 'Sagar', 'Mumbai', 25000, 3000),
+(6, 'Rohit', 'Jaipur', 40000, NULL),
+(7, 'Poonam', 'Patna', 45000, 2000),
+(8, 'Arjun', 'Delhi', 20000, 900),
+(9, 'Rahul', 'Nagpur', 60000, 5000),
+(10, 'Dulquer', 'Kochi', 30000, 1000);
+
+select * from Staff;
+
+INSERT INTO ProjectLocations (project_id, address) VALUES
+(10, 'Mumbai'),
+(20, 'Pune'),
+(30, 'Jalgaon'),
+(40, 'Nagpur'),
+(50, 'Delhi'),
+(60, 'Kochi'),
+(70, 'Pune'),
+(80, 'Nasik');
+
+
+select * from ProjectLocations;
+
+SELECT DISTINCT address
+FROM Staff
+WHERE address IS NOT NULL;
+
+SELECT 
+MAX(salary) AS MaxSalary,
+MIN(salary) AS MinSalary,
+AVG(salary) AS AvgSalary,
+SUM(salary) AS TotalSalary
+FROM Staff;
+
+SELECT * FROM Staff ORDER BY salary ASC;
+
+SELECT emp_name
+FROM Staff
+WHERE address IN ('Nasik', 'Pune');
+
+SELECT emp_name
+FROM Staff
+WHERE commission IS NULL;
+
+UPDATE Staff
+SET address = 'Nashik'
+WHERE emp_name = 'Amit';
+
+
+SELECT * FROM Staff
+WHERE emp_name = 'Amit';
+
+SELECT * FROM Staff
+WHERE emp_name LIKE 'A%';
+
+SELECT address, COUNT(*) AS StaffCount
+FROM Staff GROUP BY address;
+
+SELECT address FROM Staff
+UNION
+SELECT address FROM ProjectLocations;
+
+SELECT * FROM Staff;
+
+SELECT address,  MIN(salary) as cityWiseMinimumSalary
+FROM Staff
+GROUP BY address;
+
+SELECT address,  MAX(salary) as cityWiseMaximumSalary
+FROM Staff
+GROUP BY address
+HAVING cityWiseMaximumSalary > 20000;
+
+DELETE FROM Staff
+WHERE salary > 30000;
+
+DELETE FROM Staff
+WHERE emp_name LIKE "S%";
+
+
+SELECT * FROM Staff
+WHERE address = "Pune"
+ORDER BY emp_name ASC;
+
+SELECT * FROM Staff;

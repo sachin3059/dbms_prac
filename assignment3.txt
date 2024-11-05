@@ -1,0 +1,188 @@
+create database Assignment3;
+use Assignment3;
+
+create table pack_grades(
+	grade_id int primary key,
+    grade_name varchar(50),
+    min_price int,
+    max_price int
+);
+
+create table packages(
+	pack_id int PRIMARY KEY,
+    speed int,
+    start_date DATE,
+    monthly_payment int,
+    sector_id int
+);
+
+
+
+CREATE TABLE customers (
+	cust_id INT PRIMARY KEY,
+	fname VARCHAR(50),
+	lname VARCHAR(50),
+	dob DATE,
+	joindate DATE,
+	city VARCHAR(50),
+	state VARCHAR(50),
+	street VARCHAR(50),
+	main_phone_num VARCHAR(50),
+	sec_phone_num VARCHAR(50),
+	fax INT,
+	monthly_discount INT,
+	pack_id INT,
+    FOREIGN KEY (pack_id) REFERENCES packages(pack_id)
+);
+
+CREATE TABLE Sectors (
+    sector_id INT PRIMARY KEY,
+    sector_name VARCHAR(50)
+);
+
+show tables;
+
+
+INSERT INTO pack_grades (grade_id, grade_name, min_price, max_price) VALUES
+(1, 'Basic', 100, 500),
+(2, 'Standard', 501, 1000),
+(3, 'Premium', 1001, 1500);
+
+
+INSERT INTO Sectors (sector_id, sector_name) VALUES
+(1, 'Business'),
+(2, 'Private');
+
+
+INSERT INTO packages (pack_id, speed, start_date, monthly_payment, sector_id) VALUES
+(1, 100, '2023-01-01', 300, 1),
+(2, 200, '2023-01-01', 700, 2),
+(3, 500, '2023-01-01', 1200, 1);
+
+
+INSERT INTO customers (cust_id, fname, lname, dob, joindate, city, state, street, main_phone_num, sec_phone_num, fax, monthly_discount, pack_id) VALUES
+(101, 'John', 'Doe', '1985-06-15', '2006-03-15', 'New York', 'NY', '5th Ave', '123-456-7890', '098-765-4321', 12345, 20, 1),
+(102, 'Jane', 'Smith', '1990-11-20', '2010-06-25', 'Los Angeles', 'CA', 'Sunset Blvd', '234-567-8901', '987-654-3210', 23456, 25, 2),
+(103, 'Alice', 'Taylor', '1988-01-12', '2015-04-10', 'Chicago', 'IL', 'Michigan Ave', '345-678-9012', '876-543-2109', 34567, 15, 3);
+
+
+select * from pack_grades;
+select * from packages;
+select * from customers;
+select * from sectors;
+
+
+-- query 1:
+select c.fname,c.lname,c.pack_id,p.speed
+from customers as c
+inner join packages as p
+on c.pack_id=p.pack_id;
+
+-- query2:
+select c.fname,c.lname,c.pack_id,p.speed
+from customers as c
+inner join packages as p
+on c.pack_id=p.pack_id
+where c.pack_id=2 or c.pack_id=3 
+order by c.lname ASC;
+
+-- query 3:
+select p.pack_id,p.speed,p.monthly_payment,s.sector_name
+from packages p
+inner join sectors s
+on p.sector_id=s.sector_id;
+
+
+-- query 4:
+select c.fname,c.lname,c.pack_id,p.speed,p.monthly_payment,s.sector_name
+from packages p
+inner join customers c on c.pack_id=p.pack_id
+inner join sectors s on p.sector_id=s.sector_id;
+
+
+-- query5:
+select c.fname,c.lname,c.pack_id,p.speed,p.monthly_payment,s.sector_name
+from packages p
+inner join customers c on c.pack_id=p.pack_id
+inner join sectors s on p.sector_id=s.sector_id
+where s.sector_name='Business';
+
+-- query6:
+SELECT c.lname, c.fname, c.joindate, p.pack_id, p.speed, s.sector_name
+FROM customers c
+INNER JOIN packages p ON c.pack_id = p.pack_id
+INNER JOIN sectors s ON p.sector_id = s.sector_id
+WHERE s.sector_name = 'Private' AND YEAR(c.joindate) = 2006;
+
+select * from customers;
+select * from sectors;
+select * from packages;
+select * from pack_grades;
+
+-- non equal join
+-- query 7:
+SELECT p.pack_id, p.speed, p.monthly_payment, pg.grade_id
+FROM packages AS p
+LEFT JOIN pack_grades AS pg ON p.pack_id = pg.grade_id 
+UNION
+SELECT p.pack_id, p.speed, p.monthly_payment, pg.grade_id
+FROM packages AS p
+RIGHT JOIN pack_grades AS pg ON p.pack_id = pg.grade_id; 
+
+
+-- outer join
+-- query1
+
+select c.fname,c.lname,p.speed,p.monthly_payment
+from customers as c
+inner join packages as p
+on c.pack_id=p.pack_id;
+
+-- query2
+select c.fname,c.lname,p.monthly_payment
+from customers as c
+left join packages as p
+on c.pack_id=p.pack_id;
+
+-- query3
+select p.pack_id,p.speed,p.monthly_payment
+from packages as p
+right join customers as c
+on c.pack_id=p.pack_id;
+
+-- query4
+select c.fname, c.lname, p.pack_id,p.speed,p.monthly_payment
+from customers as c
+left join packages as p
+on c.pack_id=p.pack_id
+union
+select c.fname, c.lname, p.pack_id,p.speed,p.monthly_payment
+from customers as c
+right join packages as p
+on c.pack_id=p.pack_id;
+
+
+
+-- self join
+
+-- query1
+SELECT c1.fname, c1.lname, c1.pack_id
+FROM customers c1
+join customers c2 on c1.pack_id = c2.pack_id
+where c1.lname = "Taylor";
+
+
+-- query 2
+SELECT c1.lname, c1.fname, c1.monthly_discount
+FROM customers c1
+join customers c2 on c1.monthly_discount < c2.monthly_discount
+where c1.cust_id=103;
+   
+
+-- query 3
+SELECT p1.pack_id, p1.speed
+FROM packages p1
+JOIN packages p2 ON p1.speed = p2.speed
+WHERE p2.pack_id = 1;
+
+

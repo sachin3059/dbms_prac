@@ -1,0 +1,42 @@
+// To create collection we can also use   =>  db.createCollection("bank");       show collections;
+
+
+
+// Step 1: Insert Documents into the bank Collection
+db.bank.insertMany([
+  { 'custid': 'c001', 'custname': 'amir', 'bank': 'SBI', 'balance': 3000, 'location': 'Pune' },
+  { 'custid': 'c002', 'custname': 'amol', 'bank': 'AXIS', 'balance': 4000, 'location': 'Pune' },
+  { 'custid': 'c002', 'custname': 'amir', 'bank': 'AXIS', 'balance': 5000, 'location': 'Mumbai' },
+  { 'custid': 'c003', 'custname': 'amit', 'bank': 'AXIS', 'balance': 5000, 'location': 'Nagpur' },
+  { 'custid': 'c004', 'custname': 'amay', 'bank': 'AXIS', 'balance': 6000, 'location': 'Nashik' },
+  { 'custid': 'c005', 'custname': 'amar', 'bank': 'HDFC', 'balance': 7000, 'location': 'Pune' },
+  { 'custid': 'c006', 'custname': 'vijay', 'bank': 'HDFC', 'balance': 8000, 'location': 'Mumbai' }
+]);
+
+// Step 2: Define Map and Reduce Functions
+var mapFunction = function() {
+  emit(this.bank, this.balance);  // Emit each bank with its balance
+};
+
+var reduceFunction = function(key, values) {
+  return Array.sum(values);       // Sum up all balances for each bank
+};
+
+// Step 3: Perform MapReduce and Store Output in bankMR Collection
+db.bank.mapReduce(
+  mapFunction,
+  reduceFunction,
+  { out: "bankMR" }
+);
+
+// Step 4: Display Results from bankMR Collection
+db.bankMR.find().pretty();
+
+// Step 5: Display the balance of HDFC bank only from bankMR collection
+db.bankMR.find({ "_id": "HDFC" }).pretty();
+
+// Step 6: Display the balance of SBI bank only from bankMR collection
+db.bankMR.find({ "_id": "SBI" }).pretty();
+
+// Step 7: Display the balance of AXIS bank only from bankMR collection
+db.bankMR.find({ "_id": "AXIS" }).pretty();

@@ -1,0 +1,271 @@
+
+//1. Insert sample data for employees
+db.employee.insertMany([
+    { "custID": "A123", "Amount": 500, "status": "A" },
+    { "custID": "A123", "Amount": 250, "status": "A" },
+    { "custID": "8212", "Amount": 200, "status": "A" },
+    { "custID": "A123", "Amount": 300, "status": "D" },
+    { "custID": "A123", "Amount": 1100, "status": "A" }
+]);
+
+
+  
+// 3. Find total amount for each individual customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "totalAmount": 1850 }, { "_id": "8212", "totalAmount": 200 }]
+
+
+// 4. Find minimum amount for individual customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "minAmount": 250 }, { "_id": "8212", "minAmount": 200 }]
+
+
+// 5. Find maximum amount for individual customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "maxAmount": 1100 }, { "_id": "8212", "maxAmount": 200 }]
+
+
+// 6. Find average amount for individual customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "avgAmount": 616.66666 }, { "_id": "8212", "avgAmount": 200 }]
+
+
+// 7. Amount of the first record for each customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", firstAmount: { $first: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "firstAmount": 500 }, { "_id": "8212", "firstAmount": 200 }]
+
+
+// 8. Amount of the last record for each customer ID with status "A"
+db.employee_.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", lastAmount: { $last: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "lastAmount": 1100 }, { "_id": "8212", "lastAmount": 200 }]
+
+
+// 9. Create array of amounts for each customer ID with status "A"
+db.employee.aggregate([
+    { $match: { status: "A" } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "amounts": [500, 250, 1100] }, { "_id": "8212", "amounts": [200] }]
+
+
+// 10. Total amount after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", totalAmount: { $sum: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "totalAmount": 2150 }, { "_id": "8212", "totalAmount": 200 }]
+
+
+// 11. Average amount after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", avgAmount: { $avg: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "avgAmount": 537.5 }, { "_id": "8212", "avgAmount": 200 }]
+
+
+// 12. Minimum amount after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", minAmount: { $min: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "minAmount": 250 }, { "_id": "8212", "minAmount": 200 }]
+
+
+// 13. Maximum amount after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", maxAmount: { $max: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "maxAmount": 1100 }, { "_id": "8212", "maxAmount": 200 }]
+
+
+// 14. Amount of first record after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", firstAmount: { $first: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "firstAmount": 250 }, { "_id": "8212", "firstAmount": 200 }]
+
+
+// 15. Amount of last record after sorting for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", lastAmount: { $last: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "lastAmount": 1100 }, { "_id": "8212", "lastAmount": 200 }]
+
+
+
+// Continue with steps 16-30 using the same aggregation patterns
+// 16. After sorting records, create an array of amounts for each customer ID
+db.employee_.aggregate([
+    { $sort: { custID: 1, Amount: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } }
+]);
+// Output: [{ "_id": "A123", "amounts": [250, 500, 1100] }, { "_id": "8212", "amounts": [200] }]
+
+
+// 17. Without considering the first record, find total amount for each customer ID
+db.employee.aggregate([
+    { $sort: { _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, totalAmount: { $sum: { $slice: ["$amounts", 1,{ $size: "$amounts" }] } } } }
+]);
+// Output: [{ "_id": "A123", "totalAmount": 1350 }, { "_id": "8212", "totalAmount": 0 }]
+
+
+// 18. Without considering the first record, find average amount for each customer ID
+db.employee.aggregate([
+    { $sort: { _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, avgAmount: { $avg: { $slice: ["$amounts", 1, { $size: "$amounts" }] } } } }
+]);
+// Output: [{ "_id": "A123", "avgAmount": 450 }, { "_id": "8212", "avgAmount": 0 }]
+
+
+// 19. Without considering the first record, find maximum amount for each customer ID
+db.employee.aggregate([
+       { $sort: { _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, maxAmount: { $max: { $slice: ["$amounts", 1, { $size: "$amounts" }] } } } }
+]);
+// Output: [{ "_id": "A123", "maxAmount": 1100 }, { "_id": "8212", "maxAmount": 0 }]
+
+
+// 20. Without considering the first record, find minimum amount for each customer ID
+db.employee.aggregate([
+       { $sort: { _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, minAmount: { $min: { $slice: ["$amounts", 1, { $size: "$amounts" }] } } } }
+]);
+// Output: [{ "_id": "A123", "minAmount": 250 }, { "_id": "8212", "minAmount": 0 }]
+
+
+// 21. Without considering the first record, create an array of amounts for each customer ID
+db.employee.aggregate([
+    { $sort: { _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, amounts: { $slice: ["$amounts", 1, { $size: "$amounts" }] } } }
+]);
+// Output: [{ "_id": "A123", "amounts": [250, 1100] }, { "_id": "8212", "amounts": [] }]
+
+
+// 22. Without considering the first record, find amount of the first record for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, firstAmount: { $arrayElemAt: ["$amounts", 1] } } }
+]);
+// Output: [{ "_id": "A123", "firstAmount": 250 }, { "_id": "8212", "firstAmount": null }]
+
+
+// 23. Without considering the first record, find amount of the last record for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } }, 
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } }},
+    { $project: { _id: 1, lastAmount: {
+                $cond: {
+                    if: { $gt: [{ $size: "$amounts" }, 1] }, // Check if there are more than 1 amount
+                    then: { $arrayElemAt: ["$amounts", -1] }, // Get the last amount if valid
+                    else: 0 // Otherwise, return 0 if there are not enough entries
+                }
+            }
+        }
+    }
+]);
+// Output: [{ "_id": "A123", "lastAmount": 1100 }, { "_id": "8212", "lastAmount": 0 }]
+
+
+// 24. Considering the first 2 records only, find total amount for each customer ID
+db.employee_.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, totalAmount: { $sum: { $slice: ["$amounts", 0, 2] } } } }
+]);
+// Output: [{ "_id": "A123", "totalAmount": 750 }, { "_id": "8212", "totalAmount": 200 }]
+
+
+// 25. Considering the first 2 records only, find average amount for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, avgAmount: { $avg: { $slice: ["$amounts", 0, 2] } } } }
+]);
+// Output: [{ "_id": "A123", "avgAmount": 375 }, { "_id": "8212", "avgAmount": 200 }]
+
+
+// 26. Considering the first 2 records only, find minimum amount for each customer ID
+db.employee_.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, minAmount: { $min: { $slice: ["$amounts", 0, 2] } } } }
+]);
+// Output: [{ "_id": "A123", "minAmount": 250 }, { "_id": "8212", "minAmount": 200 }]
+
+
+// 27. Considering the first 2 records only, find maximum amount for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, maxAmount: { $max: { $slice: ["$amounts", 0, 2] } } } }
+]);
+// Output: [{ "_id": "A123", "maxAmount": 500 }, { "_id": "8212", "maxAmount": 200 }]
+
+
+// 28. Considering the first 2 records only, find amount of the first record for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } },
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } } },
+    { $project: { _id: 1, firstAmount: { $arrayElemAt: ["$amounts", 0] } } }
+]);
+// Output: [{ "_id": "A123", "firstAmount": 500 }, { "_id": "8212", "firstAmount": 200 }]
+
+
+// 29. Considering the first 2 records only, find amount of the last record for each customer ID
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } }, // Sort by custID and then by _id
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } }},
+    { $project: { _id: 1, lastAmount: {
+                $cond: {
+                    if: { $gte: [{ $size: "$amounts" }, 2] }, // Check if there are more than 1 amount
+                    then: { $arrayElemAt: ["$amounts", 1] }, // Get the last amount if valid
+                    else: { $arrayElemAt: ["$amounts", 0] } // Otherwise, return 0 if there are not enough entries
+                }
+            }
+        }
+    }
+]);
+// Output: [{ "_id": "A123", "lastAmount": 250 }, { "_id": "8212", "lastAmount": 200 }]
+
+
+//30 .Just by considering first 2 records create array of amount for individual cust Id 
+db.employee.aggregate([
+    { $sort: { custID: 1, _id: 1 } }, // Sort by custID and then by _id
+    { $group: { _id: "$custID", amounts: { $push: "$Amount" } }},
+    { $project: {_id: 1,amounts: { $slice: ["$amounts", 0, 2] } }}
+]);
+// Output : 
+[
+  { _id: '8212', amounts: [ 200 ] },
+  { _id: 'A123', amounts: [ 500, 250 ] }
+]
+

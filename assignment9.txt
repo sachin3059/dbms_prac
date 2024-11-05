@@ -1,0 +1,82 @@
+
+# 1. Create a collection named "student" with the following documents:
+db.student.insertMany([
+    { "roll_no": 1, "name": "Amit","addr":"Loni"},
+    { "roll_no": 2, "name": "Shashir", "addr": { "At":"Loni", "Tal": "Rahata", "Dist": "Ahemadnagar"} },
+    { "roll_no": 11, "name": "Sachin", "percent_marks": 60.23, "addr": "Pune" },
+    { "roll_no": 3, "name": "Rahul", "addr": "Kolhar" }
+]);
+
+
+# 2. Insert new documents into the "student" collection
+db.student.insertMany([
+    { "roll_no": 4, "name": "Vikram", "addr": "Nashik" },
+    { "roll_no": 5, "name": "Anjali", "addr": "Mumbai" },
+    { "roll_no": 6, "name": "Priya", "addr": "Aurangabad" }
+]);
+
+
+# 3. Retrieve all student details
+db.student.find();
+
+# 4. Display only the "name" field from the student collection
+db.student.find({}, { "name": 1, "_id": 0 });
+# Expected Output:
+# { "name": "Amit" }
+# { "name": "Shashir" }
+# { "name": "Sachin" }
+# { "name": "Rahul" }
+# { "name": "Vikram" }
+# { "name": "Anjali" }
+# { "name": "Priya" }
+
+# 5. Display first 5 student details (use limit())
+db.student.find().limit(5);
+
+
+# 6. Fetch the remaining documents after the first 5 (use skip())
+db.student.find().skip(5);
+
+
+# 7. Find details of students whose roll_no is between 5 and 10
+db.student.find({ "roll_no": { "$gte": 5, "$lte": 10 } });
+
+
+# 8. Display student details where address is either "Loni" or "Pune"
+db.student.find({ "$or": [{ "addr": "Loni" }, { "addr": "Pune" }] });
+
+
+# 9. Sort the student documents in ascending order by roll_no
+db.student.find().sort({ "roll_no": 1 });
+
+
+# 10. Remove documents with roll_no less than 8 and greater than 3
+db.student.deleteMany({ "roll_no": { "$lt": 8, "$gt": 3 } });
+
+
+# 11. Remove all documents with address as "Loni"
+db.student.deleteMany({ "addr": "Loni" });
+
+
+# 12. Add these details to a document where _id=10 (Use save() equivalent)
+db.student.updateOne(
+    { "roll_no": 10 },
+    { "$set": { "name": "Ram", "addr": "Pune", "roll_no": 60 } },
+    { "upsert": true }
+);
+
+
+# 13. Update the address of roll_no 1 to a nested document structure
+db.student.updateOne(
+    { "roll_no": 1 },
+    { "$set": { "addr": { "At": "Sangamner", "Tal": "Sangamner", "Dist": "Ahemadnagar" } } }
+);
+
+
+# 14. Create an index on the roll_no field
+db.student.createIndex({ "roll_no": 1 });
+
+
+# 15. Remove the "student" collection
+db.student.drop();
+
